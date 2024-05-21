@@ -12,10 +12,12 @@ let volume_slider = document.querySelector('.volume_slider');
 let curr_time = document.querySelector('.current-time');
 let total_duration = document.querySelector('.total-duration');
 let randomIcon = document.querySelector('.fa-random');
+let repeatIcon = document.querySelector('.fa-repeat');
 let curr_track = document.createElement('audio');
 
 let track_index = 0;
 let isPlaying = false;
+let repeat = false;
 let isRandom = false;
 let updateTimer;
 
@@ -69,24 +71,32 @@ function reset(){
     total_duration.textContent = "00:00";
     seek_slider.value = 0;
 }
+
+
 function randomTrack(){
     isRandom ? pauseRandom() : playRandom();
 }
 function playRandom(){
     isRandom = true;
-    randomIcon.classList.add('randomActive');
+    randomIcon.classList.add('active');
 }
 function pauseRandom(){
     isRandom = false;
-    randomIcon.classList.remove('randomActive');
+    randomIcon.classList.remove('active');
 }
+
+
 function repeatTrack(){
-    let current_index = track_index;
-    loadTrack(current_index);
-    playTrack();
+    if (repeat == false) {
+        repeat = true;
+        repeatIcon.classList.add('active');
+    } else {
+        repeat = false;
+        repeatIcon.classList.remove('active');
+    }
 }
 function playpauseTrack(){
-    isPlaying ? pauseTrack() : playTrack();
+    isPlaying ? pauseTrack() :playTrack();
 }
 function playTrack(){
     curr_track.play();
@@ -99,16 +109,21 @@ function pauseTrack(){
     playpause_btn.innerHTML = '<i class="fa fa-play-circle fa-5x"></i>';
 }
 function nextTrack(){
-    if(track_index < music_list.length - 1 && isRandom === false){
-        track_index += 1;
-    }else if(track_index < music_list.length - 1 && isRandom === true){
-        let random_index = Number.parseInt(Math.random() * music_list.length);
-        track_index = random_index;
-    }else{
-        track_index = 0;
+    if (repeat) {
+        loadTrack(track_index);
+        playTrack();
+    } else {
+        if(track_index < music_list.length - 1 && isRandom === false){
+            track_index += 1;
+        }else if(track_index < music_list.length - 1 && isRandom === true){
+            let random_index = Number.parseInt(Math.random() * music_list.length);
+            track_index = random_index;
+        }else{
+            track_index = 0;
+        }
+        loadTrack(track_index);
+        playTrack();
     }
-    loadTrack(track_index);
-    playTrack();
 }
 function prevTrack(){
     if(track_index > 0){
